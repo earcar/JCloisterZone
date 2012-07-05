@@ -7,5 +7,17 @@
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="lib" path="src/test/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/ini4j-0.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.6.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.6.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-ext-1.6.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-migrator-1.6.5.jar"/>
+	<classpathentry kind="lib" path="lib/xnap-commons-0.9.6.jar"/>
+	<classpathentry kind="lib" path="lib/gettext-commons-0.9.6.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="lib/guava-12.0.jar"/>
+	<classpathentry kind="lib" path="lib/miglayout-4.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="lib/mina-core-2.0.4.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

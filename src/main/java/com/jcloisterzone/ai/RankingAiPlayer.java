@@ -133,6 +133,7 @@ public abstract class RankingAiPlayer extends AiPlayer {
                 //logger.info("  * phase {} -> {}", getGame().getPhase(), getGame().getPhase().getDefaultNext());
                 phaseLoop();
                 double currRank = rank();
+                System.err.println("Ranking tile placements");
                 if (currRank > bestSoFar.getRank()) {
                     bestSoFar = new PositionRanking(currRank, pos, rot);
                 }
@@ -175,6 +176,7 @@ public abstract class RankingAiPlayer extends AiPlayer {
         SavePoint sp = spm.save();
         for(Position pos: action.getSites()) {
             getGame().getPhase().moveFairy(pos);
+            System.err.println("Ranking fairy placements");
             double currRank = rank();
             if (currRank > bestSoFar.getRank()) {
                 bestSoFar = new PositionRanking(currRank, currTile.getPosition(), currTile.getRotation());
@@ -193,6 +195,7 @@ public abstract class RankingAiPlayer extends AiPlayer {
         for(Location loc : locations) {
             //logger.info("    . deploying {}", meepleType);
             getGame().getPhase().deployMeeple(pos, loc, meepleType);
+            System.err.println("Ranking meeple placements");
             double currRank = rank();
             if (currRank > bestSoFar.getRank()) {
                 bestSoFar = new PositionRanking(currRank, currTile.getPosition(), currTile.getRotation());

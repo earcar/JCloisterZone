@@ -29,12 +29,12 @@ public class AiUserInterfaceAdapter implements UserInterface {
     @Override
     public void selectAction(List<PlayerAction> actions, boolean canPass) {
         if (aiPlayer.isAiPlayerActive()) {
-            try {
+//            try {
                 aiPlayer.selectAction(actions, canPass);
-            } catch (Exception e) {
-                aiPlayer.handleRuntimeError(e);
-                aiPlayer.selectDummyAction(actions, canPass);
-            }
+//            } catch (Exception e) {
+//                aiPlayer.handleRuntimeError(e);
+//                aiPlayer.selectDummyAction(actions, canPass);
+//            }
         }
     }
 
