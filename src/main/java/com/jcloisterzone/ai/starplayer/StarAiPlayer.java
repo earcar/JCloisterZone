@@ -78,8 +78,8 @@ public class StarAiPlayer extends AiPlayer {
    */
   @Override
   public void selectBazaarTile() {
-    // TODO Auto-generated method stub
-
+    logger.error("selectBazaarTile(): operation not supported");
+    throw new UnsupportedOperationException();
   }
 
   /* (non-Javadoc)
@@ -87,8 +87,8 @@ public class StarAiPlayer extends AiPlayer {
    */
   @Override
   public void makeBazaarBid(int supplyIndex) {
-    // TODO Auto-generated method stub
-
+    logger.error("makeBazaarBid(): operation not supported");
+    throw new UnsupportedOperationException();
   }
 
   /* (non-Javadoc)
@@ -96,8 +96,8 @@ public class StarAiPlayer extends AiPlayer {
    */
   @Override
   public void selectBuyOrSellBazaarOffer(int supplyIndex) {
-    // TODO Auto-generated method stub
-
+    logger.error("selectBuyOrSellBazaarOffer(): operation not supported");
+    throw new UnsupportedOperationException();
   }
 
   /* (non-Javadoc)
@@ -105,8 +105,8 @@ public class StarAiPlayer extends AiPlayer {
    */
   @Override
   public void selectDragonMove(Set<Position> positions, int movesLeft) {
-    // TODO Auto-generated method stub
-
+    logger.error("selectDragonMove(): operation not supported");
+    throw new UnsupportedOperationException();
   }
 
 }
