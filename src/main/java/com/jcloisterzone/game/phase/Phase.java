@@ -111,47 +111,47 @@ public abstract class Phase implements ClientIF {
 
     @Override
     public void startGame() {
-        logger.error(Application.ILLEGAL_STATE_MSG, "startGame");
+        logger.error(Application.ILLEGAL_STATE_MSG, "startGame", this.getClass().getName());
     }
 
     @Override
     public void pass() {
-        logger.error(Application.ILLEGAL_STATE_MSG, "pass");
+        logger.error(Application.ILLEGAL_STATE_MSG, "pass", this.getClass().getName());
     }
 
     @Override
     public void placeTile(Rotation  rotation, Position position) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "placeTile");
+        logger.error(Application.ILLEGAL_STATE_MSG, "placeTile", this.getClass().getName());
     }
 
     @Override
     public void deployMeeple(Position p,  Location d, Class<? extends Meeple> meepleType) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "placeFigure");
+        logger.error(Application.ILLEGAL_STATE_MSG, "placeFigure", this.getClass().getName());
     }
 
     @Override
     public void moveFairy(Position p) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "placeFairy");
+        logger.error(Application.ILLEGAL_STATE_MSG, "placeFairy", this.getClass().getName());
     }
 
     @Override
     public void placeTowerPiece(Position p) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "placeTowerPiece");
+        logger.error(Application.ILLEGAL_STATE_MSG, "placeTowerPiece", this.getClass().getName());
     }
 
     @Override
     public void placeTunnelPiece(Position p, Location d, boolean isSecondPiece) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "placeTunnelPiece");
+        logger.error(Application.ILLEGAL_STATE_MSG, "placeTunnelPiece", this.getClass().getName());
     }
 
     @Override
     public void undeployMeeple(Position p, Location d) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "undeployMeeple");
+        logger.error(Application.ILLEGAL_STATE_MSG, "undeployMeeple", this.getClass().getName());
     }
 
     @Override
     public void moveDragon(Position p) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "moveDragon");
+        logger.error(Application.ILLEGAL_STATE_MSG, "moveDragon", this.getClass().getName());
     }
 
     @Override
@@ -162,53 +162,53 @@ public abstract class Phase implements ClientIF {
 
     @Override
     public void updateCustomRule(CustomRule rule, Boolean enabled) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "updateCustomRule");
+        logger.error(Application.ILLEGAL_STATE_MSG, "updateCustomRule", this.getClass().getName());
     }
     @Override
     public void updateExpansion(Expansion expansion, Boolean enabled) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "updateExpansion");
+        logger.error(Application.ILLEGAL_STATE_MSG, "updateExpansion", this.getClass().getName());
 
     }
     @Override
     public void updateSlot(PlayerSlot slot) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "updateSlot");
+        logger.error(Application.ILLEGAL_STATE_MSG, "updateSlot", this.getClass().getName());
     }
 
     @Override
     public void updateSupportedExpansions(EnumSet<Expansion> expansions) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "updateSupportedExpansions");
+        logger.error(Application.ILLEGAL_STATE_MSG, "updateSupportedExpansions", this.getClass().getName());
     }
 
 
     @Override
     public void drawTiles(int[] tileIndex) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "drawTiles");
+        logger.error(Application.ILLEGAL_STATE_MSG, "drawTiles", this.getClass().getName());
     }
 
      @Override
     public void takePrisoner(Position p, Location d) {
-         logger.error(Application.ILLEGAL_STATE_MSG, "captureFigure");
+         logger.error(Application.ILLEGAL_STATE_MSG, "captureFigure", this.getClass().getName());
     }
 
     @Override
     public void deployBridge(Position pos, Location loc) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "deployBridge");
+        logger.error(Application.ILLEGAL_STATE_MSG, "deployBridge", this.getClass().getName());
 
     }
 
     @Override
     public void deployCastle(Position pos, Location loc) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "deployCastle");
+        logger.error(Application.ILLEGAL_STATE_MSG, "deployCastle", this.getClass().getName());
     }
 
     @Override
     public void bazaarBid(Integer supplyIndex, Integer price) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "bazaarBid");
+        logger.error(Application.ILLEGAL_STATE_MSG, "bazaarBid", this.getClass().getName());
     }
 
     @Override
     public void bazaarBuyOrSell(boolean buy) {
-        logger.error(Application.ILLEGAL_STATE_MSG, "bazaarBuyOrSell");
+        logger.error(Application.ILLEGAL_STATE_MSG, "bazaarBuyOrSell", this.getClass().getName());
     }
 
 }

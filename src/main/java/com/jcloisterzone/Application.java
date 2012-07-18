@@ -11,5 +11,5 @@ public interface Application {
 
     public int PROTCOL_VERSION = 11;
 
-    public static final String ILLEGAL_STATE_MSG = "Method '{}' called in invalid state";
+    public static final String ILLEGAL_STATE_MSG = "Method '{}' called in invalid state {}";
 }
