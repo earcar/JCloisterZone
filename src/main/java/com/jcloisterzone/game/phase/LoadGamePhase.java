@@ -15,7 +15,7 @@ import com.jcloisterzone.rmi.ServerIF;
 
 public class LoadGamePhase extends CreateGamePhase {
 
-    private Snapshot snapshot;
+    protected Snapshot snapshot;
     private LoadGameTilePackFactory tilePackFactory;
 
     public LoadGamePhase(Game game, Snapshot snapshot, ServerIF server) {

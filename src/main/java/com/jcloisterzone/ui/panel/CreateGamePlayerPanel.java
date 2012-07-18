@@ -25,9 +25,7 @@ import org.slf4j.LoggerFactory;
 import net.miginfocom.swing.MigLayout;
 
 import com.jcloisterzone.Expansion;
-import com.jcloisterzone.ai.AiPlayer;
-import com.jcloisterzone.ai.legacyplayer.LegacyAiPlayer;
-import com.jcloisterzone.ai.starplayer.StarAiPlayer;
+import com.jcloisterzone.ai.starplayer.ExpectimaxAiPlayer;
 import com.jcloisterzone.game.PlayerSlot;
 import com.jcloisterzone.game.PlayerSlot.SlotType;
 import com.jcloisterzone.ui.Client;
@@ -220,8 +218,8 @@ public class CreateGamePlayerPanel extends JPanel {
                 nameProvider.releaseName(SlotType.PLAYER, slot.getNumber());
                 slot.setType(SlotType.AI);
                 //TODO pryc s hardcoded AI tridou
-                slot.setAiClassName(StarAiPlayer.class.getName());
-                supported = StarAiPlayer.supportedExpansions();
+                slot.setAiClassName(ExpectimaxAiPlayer.class.getName());
+                supported = ExpectimaxAiPlayer.supportedExpansions();
                 nick = nameProvider.reserveName(SlotType.AI, slot.getNumber());
                 slot.setNick(nick);
                 nickname.setText(nick);
