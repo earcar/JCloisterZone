@@ -72,11 +72,15 @@ public class ExpectimaxAiPlayer extends AiPlayer {
     setGame(original);
     savePointManager.stopRecording();
     savePointManager = null;
-    
+
     // make move
     logger.info("MOVE SCORE: {}", rootNode.getScore());
     getServer().placeTile(rootNode.getRotation(), rootNode.getPosition());
-    getServer().deployMeeple(rootNode.getPosition(), rootNode.getLocation(), rootNode.getMeepleType());
+    if (rootNode.getLocation() != null) {
+      getServer().deployMeeple(rootNode.getPosition(), rootNode.getLocation(), rootNode.getMeepleType());
+    } else {
+      getServer().pass();
+    }
   }
 
   private double expectimax(ExpectimaxNode node, int depth) {
@@ -96,6 +100,7 @@ public class ExpectimaxAiPlayer extends AiPlayer {
         double value = negamax(node, depth);
         score += value * numberOfSameTiles(getGame().getCurrentTile())/getGame().getTilePack().size();
       } else { // we have to draw new tiles
+        logger.info("tile pack size = {}", getGame().getTilePack().size());
         for (int i = 0; i < getGame().getTilePack().size(); i++) {
           enterNextPhaseIfIs(AiScorePhase.class);
           enterNextPhaseIfIs(AiCleanUpPhase.class);
@@ -126,35 +131,60 @@ public class ExpectimaxAiPlayer extends AiPlayer {
         SavePoint beforeTile = savePointManager.save();
         getGame().getPhase().placeTile(rotation, position);
         logger.info("tile placed in {} {}", position, rotation);
-        
+
         // place meeple
         assert getGame().getPhase() instanceof AiActionPhase;
         List<PlayerAction> actions = ((AiActionPhase) getGame().getPhase()).getActions();
-        for (PlayerAction action : actions) {
-          Class<? extends Meeple> meepleType = ((MeepleAction) action).getMeepleType();
-          if (action instanceof MeepleAction) {
-            Set<Location> locations = ((MeepleAction) action).getSites().get(position);
-            for (Location location : locations) { // TODO without meeple (?)
-              ExpectimaxNode childNode = new ExpectimaxNode(node, position, rotation, location);
-              SavePoint beforeMeeple = savePointManager.save();
-              getGame().getPhase().deployMeeple(position, location, meepleType);
-              logger.info("meeple placed in {} {}", position, location);
-              double value = -expectimax(childNode, depth - 1);
-              childNode.setScore(value);
-              savePointManager.restore(beforeMeeple);
-              if (value > score) {
-                node.setScore(value);
-                node.setPosition(position);
-                node.setRotation(rotation);
-                node.setLocation(location);
-                node.setMeepleType(meepleType);
-                score = value;
+        if (actions.isEmpty()) {
+          ExpectimaxNode childNode = new ExpectimaxNode(node, position, rotation, null);
+          SavePoint beforeMeeple = savePointManager.save();
+          logger.info("no meeple placed");
+          enterNextPhaseIfIs(AiActionPhase.class);
+          double value = -expectimax(childNode, depth - 1);
+          childNode.setScore(value);
+          savePointManager.restore(beforeMeeple);
+          if (value > score) {
+            node.setScore(value);
+            node.setPosition(position);
+            node.setRotation(rotation);
+            node.setLocation(null);
+            node.setMeepleType(null);
+            score = value;
+          }
+          logger.info("depth = {}; best score so far = {}", depth, score);
+        } else {
+          for (PlayerAction action : actions) {
+            Class<? extends Meeple> meepleType = ((MeepleAction) action).getMeepleType();
+            if (action instanceof MeepleAction) {
+              Set<Location> locations = ((MeepleAction) action).getSites().get(position);
+              locations.add(null); // without meeple
+              for (Location location : locations) {
+                ExpectimaxNode childNode = new ExpectimaxNode(node, position, rotation, location);
+                SavePoint beforeMeeple = savePointManager.save();
+                if (location != null) {
+                  getGame().getPhase().deployMeeple(position, location, meepleType);
+                  logger.info("meeple placed in {} {}", position, location);
+                } else {
+                  logger.info("no meeple placed");
+                  enterNextPhaseIfIs(AiActionPhase.class);
+                }
+                double value = -expectimax(childNode, depth - 1);
+                childNode.setScore(value);
+                savePointManager.restore(beforeMeeple);
+                if (value > score) {
+                  node.setScore(value);
+                  node.setPosition(position);
+                  node.setRotation(rotation);
+                  node.setLocation(location);
+                  node.setMeepleType(meepleType);
+                  score = value;
+                }
+                logger.info("depth = {}; best score so far = {}", depth, score);
               }
-              logger.info("depth = {}; best score so far = {}", depth, score);
+            } else {
+              logger.error("selectMeeplePlacement(): unsupported action {}", action);
+              throw new UnsupportedOperationException(action.toString());
             }
-          } else {
-            logger.error("selectMeeplePlacement(): unsupported action {}", action);
-            throw new UnsupportedOperationException(action.toString());
           }
         }
         // finished placing meeples

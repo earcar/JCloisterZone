@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.jcloisterzone.board.Tile;
 import com.jcloisterzone.game.Game;
+import com.jcloisterzone.game.phase.GameOverPhase;
 import com.jcloisterzone.game.phase.Phase;
 
 public class AiDrawPhase extends Phase {
@@ -16,10 +17,10 @@ public class AiDrawPhase extends Phase {
 
   @Override
   public void enter() {
-    // if (getTilePack().isEmpty()) {
-    // next(GameOverPhase.class);
-    // return;
-    // }
+    if (getTilePack().isEmpty()) {
+      next(GameOverPhase.class);
+      return;
+    }
     if (this.willDrawTiles()) {
       this.selectTiles(getTilePack().size(), 1);
     }
