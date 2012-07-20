@@ -30,7 +30,7 @@ import com.jcloisterzone.game.phase.Phase;
 
 public class ExpectimaxAiPlayer extends AiPlayer {
   private SavePointManager savePointManager = null;
-  private static final int DEPTH = 1;
+  private static final int DEPTH = 2;
 
   /*
    * (non-Javadoc) This AI only supports the basic extension
@@ -85,32 +85,38 @@ public class ExpectimaxAiPlayer extends AiPlayer {
 
   private double expectimax(ExpectimaxNode node, int depth) {
     double score = 0;
+
+    // if node is terminal
     if (depth == 0) {
-      assert getGame().getPhase() instanceof AiScorePhase;
+      assert getGame().getPhase() instanceof AiScorePhase; // ensure we are in the score phase
       AiScorePhase scorePhase = (AiScorePhase) getGame().getPhase();
-      scorePhase.setWillScore(true);
+      scorePhase.setWillScore(true); // allow scoring
       Map<Feature, AiScoreContext> scoreCache = Maps.newHashMap();
       PositionEvaluator evaluator = new PositionEvaluator(getGame(), scoreCache);
+      
+      // evaluate
       score = evaluator.evaluate();
-      scorePhase.setWillScore(false);
+      
+      scorePhase.setWillScore(false); // disallow scoring
     } else {
-      if (node.getParent() == null) { // is root node
-        assert getGame().getPhase() instanceof AiTilePhase;
-        SavePoint restore = savePointManager.save();
-        double value = negamax(node, depth);
-        score += value * numberOfSameTiles(getGame().getCurrentTile())/getGame().getTilePack().size();
-        savePointManager.restore(restore);
+      if (node.getParent() == null) { // if is root node we don't have to draw a new tile
+        assert getGame().getPhase() instanceof AiTilePhase; // ensure we are in tile phase
+        SavePoint restore = savePointManager.save(); // save here
+        double value = negamax(node, depth); // evaluate game from here
+        score += value * numberOfSameTiles(getGame().getCurrentTile())/getGame().getTilePack().size(); // calc score
+        savePointManager.restore(restore); // restore here
       } else { // we have to draw new tiles
-        logger.info("tile pack size = {}", getGame().getTilePack().size());
         for (int i = 0; i < getGame().getTilePack().size(); i++) {
-          enterNextPhaseIfIs(AiScorePhase.class);
-          enterNextPhaseIfIs(AiCleanUpPhase.class);
+          enterNextPhaseIfIs(AiScorePhase.class); // jump scoring phase (willScore = false)
+          enterNextPhaseIfIs(AiCleanUpPhase.class); // clean up stuff
           SavePoint restore = savePointManager.save();
+          
           // draw new tile
           assert getGame().getPhase() instanceof AiDrawPhase;
-          ((AiDrawPhase) getGame().getPhase()).setWillDrawTiles(false);
+          ((AiDrawPhase) getGame().getPhase()).setWillDrawTiles(false); // we draw our own tiles, thank you very much
           ((AiDrawPhase) getGame().getPhase()).drawTile(i);
           enterNextPhaseIfIs(AiDrawPhase.class);
+          
           enterNextPhaseIfIs(AiTilePhase.class);
           double value = negamax(node, depth);
           score += value * numberOfSameTiles(getGame().getCurrentTile())/getGame().getTilePack().size();
@@ -123,23 +129,30 @@ public class ExpectimaxAiPlayer extends AiPlayer {
     return score;
   }
 
+  private Map<Position, Set<Rotation>> getAvailablePlacements() {
+    getBoard().refreshAvailablePlacements(getGame().getCurrentTile());
+    return getBoard().getAvailablePlacements();
+  }
+
   private double negamax(ExpectimaxNode node, int depth) {
     double score = Double.NEGATIVE_INFINITY; 
-    for (Entry<Position, Set<Rotation>> entry : getBoard().getAvailablePlacements().entrySet()){
+    
+    for (Entry<Position, Set<Rotation>> entry : getAvailablePlacements().entrySet()){
       Position position = entry.getKey();
       for (Rotation rotation : entry.getValue()) {
+        
         // place tile
         assert getGame().getPhase() instanceof AiTilePhase;
         SavePoint beforeTile = savePointManager.save();
         getGame().getPhase().placeTile(rotation, position);
 
-        // place meeple
         assert getGame().getPhase() instanceof AiActionPhase;
         List<PlayerAction> actions = ((AiActionPhase) getGame().getPhase()).getActions();
-        if (actions.isEmpty()) {
+        if (actions.isEmpty()) { // no meeples to place
           ExpectimaxNode childNode = new ExpectimaxNode(node, position, rotation, null);
           SavePoint beforeMeeple = savePointManager.save();
           enterNextPhaseIfIs(AiActionPhase.class);
+          
           double value = expectimax(childNode, depth - 1);
           if ((node.isMax() && value > score) || (node.isMin() && value < score)) {
             node.setScore(value);
@@ -149,23 +162,30 @@ public class ExpectimaxAiPlayer extends AiPlayer {
             node.setMeepleType(null);
             score = value;
           }
+          
           savePointManager.restore(beforeMeeple);
           logger.info("depth = {}; best score so far = {}", depth, score);
-        } else {
+          
+        } else { // at least one meeple to place
           for (PlayerAction action : actions) {
             Class<? extends Meeple> meepleType = ((MeepleAction) action).getMeepleType();
             if (action instanceof MeepleAction) {
               Set<Location> locations = ((MeepleAction) action).getSites().get(position);
-              locations.add(null); // without meeple
+              locations.add(null); // also rate a position without meeples
+              
               for (Location location : locations) {
                 ExpectimaxNode childNode = new ExpectimaxNode(node, position, rotation, location);
                 SavePoint beforeMeeple = savePointManager.save();
-                if (location != null) {
-                  getGame().getPhase().deployMeeple(position, location, meepleType);
-                } else {
+                
+                if (location == null) { // no meeple
                   enterNextPhaseIfIs(AiActionPhase.class);
+                } else { // meeple
+                  getGame().getPhase().deployMeeple(position, location, meepleType);
                 }
+                
+                // evaluate
                 double value = expectimax(childNode, depth - 1);
+                
                 if ((node.isMax() && value > score) || (node.isMin() && value < score)) {
                   node.setScore(value);
                   node.setPosition(position);
@@ -174,6 +194,7 @@ public class ExpectimaxAiPlayer extends AiPlayer {
                   node.setMeepleType(meepleType);
                   score = value;
                 }
+                
                 savePointManager.restore(beforeMeeple);
                 logger.info("depth = {}; best score so far = {}", depth, score);
               }
