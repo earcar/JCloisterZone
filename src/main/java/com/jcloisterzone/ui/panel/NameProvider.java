@@ -26,7 +26,8 @@ public class NameProvider {
 
 	public NameProvider(Ini config) {
 		initNames(SlotType.PLAYER, config.get("players").getAll("name"));
-		initNames(SlotType.AI, config.get("players").getAll("ai_name"));		
+		initNames(SlotType.AI, config.get("players").getAll("ai_name"));
+		initNames(SlotType.STARAI, config.get("players").getAll("starai_name"));
 	}
 	
 	private void initNames(SlotType type, List<String> names) {

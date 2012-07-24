@@ -145,6 +145,9 @@ public class Snapshot implements Serializable {
             if (p.getSlot().getType() == SlotType.AI) {
                 el.setAttribute("ai-class", p.getSlot().getAiClassName());
             }
+            if (p.getSlot().getType() == SlotType.STARAI) {
+              el.setAttribute("starai-class", p.getSlot().getAiClassName());
+            }
             parent.appendChild(el);
         }
     }
@@ -280,6 +283,10 @@ public class Snapshot implements Serializable {
             if (el.hasAttribute("ai-class")) {
                 slot.setType(SlotType.AI);
                 String aiClassName = el.getAttribute("ai-class");
+                slot.setAiClassName(aiClassName);
+            } else if (el.hasAttribute("starai-class")) {
+                slot.setType(SlotType.STARAI);
+                String aiClassName = el.getAttribute("starai-class");
                 slot.setAiClassName(aiClassName);
             } else {
                 if (el.hasAttribute("local")) {

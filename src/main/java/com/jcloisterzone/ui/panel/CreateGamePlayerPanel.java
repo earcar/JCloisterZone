@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import net.miginfocom.swing.MigLayout;
 
 import com.jcloisterzone.Expansion;
+import com.jcloisterzone.ai.legacyplayer.LegacyAiPlayer;
 import com.jcloisterzone.ai.starplayer.ExpectimaxAiPlayer;
 import com.jcloisterzone.game.PlayerSlot;
 import com.jcloisterzone.game.PlayerSlot.SlotType;
@@ -156,6 +157,10 @@ public class CreateGamePlayerPanel extends JPanel {
                 status.setText(_("Computer player"));
                 updateIcon("ai", color, false);
                 break;
+            case STARAI:
+                status.setText(_("Computer player"));
+                updateIcon("starai", color, false);
+                break;
         }
         nickname.setText(slot.getNick());
     }
@@ -185,6 +190,12 @@ public class CreateGamePlayerPanel extends JPanel {
                 status.setText(_("Computer player"));
                 //updateIcon("ai", color, slot.getOwner() == clientId);
                 updateIcon("ai", color, true);
+                updateNickname(false);
+                break;
+            case STARAI:
+                status.setText(_("Stronger Computer player"));
+                //updateIcon("ai", color, slot.getOwner() == clientId);
+                updateIcon("starai", color, true);
                 updateNickname(false);
                 break;
         }
@@ -218,14 +229,24 @@ public class CreateGamePlayerPanel extends JPanel {
                 nameProvider.releaseName(SlotType.PLAYER, slot.getNumber());
                 slot.setType(SlotType.AI);
                 //TODO pryc s hardcoded AI tridou
-                slot.setAiClassName(ExpectimaxAiPlayer.class.getName());
-                supported = ExpectimaxAiPlayer.supportedExpansions();
+                slot.setAiClassName(LegacyAiPlayer.class.getName());
+                supported = LegacyAiPlayer.supportedExpansions();
                 nick = nameProvider.reserveName(SlotType.AI, slot.getNumber());
                 slot.setNick(nick);
                 nickname.setText(nick);
                 break;
-            case AI: //-> OPEN
+            case AI: //-> STARAI
                 nameProvider.releaseName(SlotType.AI, slot.getNumber());
+
+                slot.setType(SlotType.STARAI);
+                slot.setAiClassName(ExpectimaxAiPlayer.class.getName());
+                supported = ExpectimaxAiPlayer.supportedExpansions();
+                nick = nameProvider.reserveName(SlotType.STARAI, slot.getNumber());
+                slot.setNick(nick);
+                nickname.setText(nick);
+                break;
+            case STARAI: //-> OPEN
+                nameProvider.releaseName(SlotType.STARAI, slot.getNumber());
                 slot.setType(SlotType.OPEN);
                 break;
             default:
