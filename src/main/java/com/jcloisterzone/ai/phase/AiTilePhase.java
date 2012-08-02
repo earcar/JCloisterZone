@@ -46,6 +46,7 @@ public class AiTilePhase extends Phase {
       bridgeRequired = !getBoard().isPlacementAllowed(tile, p);
     }
 
+    getBoard().refreshAvailablePlacements(tile);
     getBoard().add(tile, p);
     if (tile.getTower() != null) {
       game.getTowerGame().registerTower(p);

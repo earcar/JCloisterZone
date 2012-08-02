@@ -178,6 +178,10 @@ public class Game extends GameSettings {
         this.turnPlayer = turnPlayer;
         fireGameEvent().playerActivated(turnPlayer, turnPlayer);
     }
+    
+    public void setPlayer(Player turnPlayer) {
+      this.turnPlayer = turnPlayer;
+    }
 
     /**
      * Returns player who is allowed to make next action.

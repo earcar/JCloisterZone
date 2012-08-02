@@ -13,6 +13,7 @@ public interface TilePack {
     Tile drawTile(int index);
     Tile drawTile(String groupId, String tileId);
     Tile drawTile(String tileId);
+    int countSameTiles(String groupId, String tileId);
 
     /* special Abbey related methods - refactor je to jen kvuli klientovi */
     Tile getAbbeyTile();

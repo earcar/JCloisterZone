@@ -37,9 +37,12 @@ import com.jcloisterzone.game.expansion.TradersAndBuildersGame;
 import com.jcloisterzone.game.expansion.TradersAndBuildersGame.BuilderState;
 
 public class PositionEvaluator extends AiPlayer {
+  public static final double L = -250; // lower...
+  public static final double U = 250; // ...and upper bounds of the evaluation function
   // private Game game;
   private Map<Feature, AiScoreContext> scoreCache;
 
+  private Player aiPlayer;
   private static final double TRAPPED_MY_FIGURE_POINTS = -12.0;
   private static final double TRAPPED_ENEMY_FIGURE_POINTS = 3.0;
   private static final double MIN_CHANCE = 0.4;
@@ -72,12 +75,13 @@ public class PositionEvaluator extends AiPlayer {
     openCityCount = 0;
     openFarmCount = 0;
     openCloisterCount = 0;
-    setPlayer(getGame().getActivePlayer());
+    setPlayer(aiPlayer);
   }
 
-  public PositionEvaluator(Game game, Map<Feature, AiScoreContext> scoreCache) {
+  public PositionEvaluator(Player aiPlayer, Game game, Map<Feature, AiScoreContext> scoreCache) {
     setGame(game);
     this.scoreCache = scoreCache;
+    this.aiPlayer = aiPlayer;
     initVariables();
   }
 
@@ -103,7 +107,7 @@ public class PositionEvaluator extends AiPlayer {
   private double rankConvexity() {
     Tile tile = getGame().getCurrentTile();
     Position pos = tile.getPosition();
-    logger.info("rankConvexity(): pos.x = {}, pos.y = {}", pos.x, pos.y);
+//    logger.info("rankConvexity(): pos.x = {}, pos.y = {}", pos.x, pos.y);
     return 0.001 * getGame().getBoard().getAdjacentAndDiagonalTiles(pos).size();
   }
 
@@ -123,9 +127,9 @@ public class PositionEvaluator extends AiPlayer {
   // return game.getActivePlayer();
   // }
 
-  // protected boolean isMe(Player p) {
-  // return p.getIndex() == getPlayer().getIndex();
-  // }
+   protected boolean isMe(Player p) {
+     return p == this.aiPlayer;
+   }
 
   protected double reducePoints(double points, Player p) {
     if (isMe(p)) {

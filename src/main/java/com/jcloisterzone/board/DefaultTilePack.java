@@ -193,4 +193,15 @@ public class DefaultTilePack implements TilePack {
         return size;
     }
 
+    @Override
+    public int countSameTiles(String groupId, String tileId) {
+      int number = 0;
+      for (Tile tile : groups.get(groupId)) {
+        if (tile.getId().equals(tileId)) {
+          number++;
+        }
+      }
+      return number;
+    }
+
 }
