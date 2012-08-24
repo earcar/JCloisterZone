@@ -26,6 +26,7 @@ import com.jcloisterzone.board.Rotation;
 import com.jcloisterzone.board.Tile;
 import com.jcloisterzone.event.GameEventAdapter;
 import com.jcloisterzone.feature.Feature;
+import com.jcloisterzone.figure.Follower;
 import com.jcloisterzone.figure.Meeple;
 import com.jcloisterzone.game.Game;
 import com.jcloisterzone.game.Snapshot;
@@ -110,7 +111,7 @@ public class ExpectimaxAiPlayer extends AiPlayer {
       getServer().pass();
     }
   }
-  
+
   private Double expectimax(ExpectimaxNode node, int depth) {
     Double score = null;
 
@@ -129,11 +130,14 @@ public class ExpectimaxAiPlayer extends AiPlayer {
         double value = negamax(node, depth); // evaluate game from here
         getGame().setCurrentTile(backupTile);
 
-        double probabilityOfCurrentTile = probabilityOfCurrentTile();
-        score += value * probabilityOfCurrentTile; // calc score
+        double newValue = value * probabilityOfCurrentTile();
+        if (isMe()) {
+          score -= newValue;
+        } else {
+          score += newValue;
+        }
         node.setScore(score);
 
-        logger.info("Player " + getGame().getTurnPlayer().getIndex() + " depth {} score {} after probability (" + probabilityOfCurrentTile + ") " + score +  " tile " + getGame().getCurrentTile(), depth, value);;
         savePointManager.restore(restore); // restore here
       } else { // we have to draw new tiles
         if (getGame().getTilePack().size() > 0) score = 0.0;
@@ -154,11 +158,14 @@ public class ExpectimaxAiPlayer extends AiPlayer {
           double value = negamax(node, depth);
           getGame().setCurrentTile(backupTile);
 
-          double probabilityOfCurrentTile = probabilityOfCurrentTile();
-          score += value * probabilityOfCurrentTile; // calc score
+          double newValue = value * probabilityOfCurrentTile();
+          if (isMe()) {
+            score -= newValue;
+          } else {
+            score += newValue;
+          }
           node.setScore(score);
 
-          logger.info("Player " + getGame().getTurnPlayer().getIndex() + " depth {} score {} after probability (" + probabilityOfCurrentTile + ") " + score +  " tile " + getGame().getCurrentTile(), depth, value);
           savePointManager.restore(restore);
         }
       }
