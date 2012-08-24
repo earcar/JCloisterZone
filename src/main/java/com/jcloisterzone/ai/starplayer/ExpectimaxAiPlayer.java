@@ -1,5 +1,8 @@
 package com.jcloisterzone.ai.starplayer;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -63,11 +66,14 @@ public class ExpectimaxAiPlayer extends AiPlayer {
     savePointManager.startRecording();
     // * prepare tree
     ExpectimaxNode rootNode = new ExpectimaxNode();
+    rootNode.setPlayer(getGame().getTurnPlayer());
     int depth = DEPTH;
 
     // rank moves
     double score = expectimax(rootNode, depth);
-    rootNode.print();
+    
+//    printTree(rootNode);
+//    System.exit(1);
     logger.info("Expectimax score: {}", score);
 
     // restore original game
@@ -77,6 +83,17 @@ public class ExpectimaxAiPlayer extends AiPlayer {
 
     // make move
     makeMove(rootNode);
+  }
+
+  private void printTree(ExpectimaxNode rootNode) {
+    FileOutputStream out = null;
+    try {
+      out = new FileOutputStream("/Users/carmine/Desktop/tree.txt");
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    rootNode.print(new PrintStream(out));
   }
 
   private void makeMove(ExpectimaxNode rootNode) {
@@ -116,7 +133,7 @@ public class ExpectimaxAiPlayer extends AiPlayer {
         score += value * probabilityOfCurrentTile; // calc score
         node.setScore(score);
 
-        logger.info("Player " + getGame().getActivePlayer().getIndex() + " depth {} score {} after probability (" + probabilityOfCurrentTile + ") " + score +  " tile " + getGame().getCurrentTile(), depth, value);;
+        logger.info("Player " + getGame().getTurnPlayer().getIndex() + " depth {} score {} after probability (" + probabilityOfCurrentTile + ") " + score +  " tile " + getGame().getCurrentTile(), depth, value);;
         savePointManager.restore(restore); // restore here
       } else { // we have to draw new tiles
         if (getGame().getTilePack().size() > 0) score = 0.0;
@@ -141,7 +158,7 @@ public class ExpectimaxAiPlayer extends AiPlayer {
           score += value * probabilityOfCurrentTile; // calc score
           node.setScore(score);
 
-          logger.info("Player " + getGame().getActivePlayer().getIndex() + " depth {} score {} after probability (" + probabilityOfCurrentTile + ") " + score +  " tile " + getGame().getCurrentTile(), depth, value);
+          logger.info("Player " + getGame().getTurnPlayer().getIndex() + " depth {} score {} after probability (" + probabilityOfCurrentTile + ") " + score +  " tile " + getGame().getCurrentTile(), depth, value);
           savePointManager.restore(restore);
         }
       }
@@ -150,7 +167,7 @@ public class ExpectimaxAiPlayer extends AiPlayer {
   }
 
   private boolean isMe() {
-    return getGame().getActivePlayer().getIndex() == this.getPlayer().getIndex();
+    return getGame().getTurnPlayer().getIndex() == this.getPlayer().getIndex();
   }
 
   private double probabilityOfCurrentTile() {
@@ -163,13 +180,10 @@ public class ExpectimaxAiPlayer extends AiPlayer {
     AiScorePhase scorePhase = (AiScorePhase) getGame().getPhase();
     scorePhase.setWillScore(true); // allow scoring
     Map<Feature, AiScoreContext> scoreCache = Maps.newHashMap();
-    PositionEvaluator evaluator = new PositionEvaluator(this.getPlayer(), getGame(), scoreCache);
+    PositionEvaluator evaluator = new PositionEvaluator(getGame().getTurnPlayer(), getGame(), scoreCache);
 
     // evaluate
     score = evaluator.evaluate();
-    if (!isMe()) {
-      score = -score;
-    }
 
     scorePhase.setWillScore(false); // disallow scoring
     return score;
@@ -217,6 +231,7 @@ public class ExpectimaxAiPlayer extends AiPlayer {
               for (Location location : locations) {
                 score = callExpectimax(node, depth, score, getGame().getCurrentTile(), position, rotation,
                     meepleType, location);
+//                System.out.println("position: " + position + " location: " + location + " rotation: " + rotation + " tile pack: " + getGame().getTilePack().size());
               }
             } else {
               logger.error("selectMeeplePlacement(): unsupported action {}", action);
@@ -226,20 +241,23 @@ public class ExpectimaxAiPlayer extends AiPlayer {
         }
         // finished placing meeples
         savePointManager.restore(beforeTile);
-        enterNextPhaseIfIs(AiCleanUpPhase.class);
       }
       savePointManager.restore(beforeTile);
       enterNextPhaseIfIs(AiCleanUpPhase.class);
     }
     return score;
   }
-
+  // TODO: change name
   private double callExpectimax(ExpectimaxNode node, int depth, double score,
       Tile tile, Position position, Rotation rotation, Class<? extends Meeple> meepleType,
       Location location) {
-    ExpectimaxNode childNode = new ExpectimaxNode(node, tile, position, rotation, location, meepleType);
     SavePoint beforeMeeple = savePointManager.save();
 
+    Tile backupTile = getGame().getCurrentTile();
+    Player currentPlayer = getGame().getTurnPlayer();
+    if (depth != DEPTH) {
+      getGame().setPlayer(getGame().getNextPlayer());
+    }
     if (location == null || meepleType == null) { // no meeple
       enterNextPhaseIfIs(AiActionPhase.class);
     } else { // meeple
@@ -247,22 +265,16 @@ public class ExpectimaxAiPlayer extends AiPlayer {
     }
 
     // evaluate
-    Tile backupTile = getGame().getCurrentTile();
-    Player currentPlayer = getGame().getActivePlayer();
-    getGame().setPlayer(getGame().getNextPlayer());
+    ExpectimaxNode childNode = new ExpectimaxNode(node, tile, position, rotation, location, meepleType);
+    childNode.setPlayer(getGame().getTurnPlayer());
     Double value = expectimax(childNode, depth - 1);
     getGame().setPlayer(currentPlayer);
     getGame().setCurrentTile(backupTile);
     
-    if (value == null) {
-//      node.removeChild(childNode);
-    } else {
-      if ((node.isMax() && value > score) || (node.isMin() && value < score)) {
-        node.setScore(value);
-        node.setBestMove(childNode);
-        score = value;
-        logger.info("Player " + getGame().getActivePlayer().getIndex() + " depth {} best score {} tile " + getGame().getCurrentTile(), depth, score);
-      }
+    if ((node.isMax() && value > score) || (node.isMin() && value < score)) {
+      node.setBestMove(childNode);
+      score = value;
+      logger.info("Player " + getGame().getTurnPlayer().getIndex() + " depth {} best score {} tile " + getGame().getCurrentTile(), depth, score);
     }
     savePointManager.restore(beforeMeeple);
     return score;

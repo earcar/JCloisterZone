@@ -42,7 +42,7 @@ public class PositionEvaluator extends AiPlayer {
   // private Game game;
   private Map<Feature, AiScoreContext> scoreCache;
 
-  private Player aiPlayer;
+  private Player turnPlayer;
   private static final double TRAPPED_MY_FIGURE_POINTS = -12.0;
   private static final double TRAPPED_ENEMY_FIGURE_POINTS = 3.0;
   private static final double MIN_CHANCE = 0.4;
@@ -75,13 +75,13 @@ public class PositionEvaluator extends AiPlayer {
     openCityCount = 0;
     openFarmCount = 0;
     openCloisterCount = 0;
-    setPlayer(aiPlayer);
+    setPlayer(turnPlayer);
   }
 
   public PositionEvaluator(Player aiPlayer, Game game, Map<Feature, AiScoreContext> scoreCache) {
     setGame(game);
     this.scoreCache = scoreCache;
-    this.aiPlayer = aiPlayer;
+    this.turnPlayer = aiPlayer;
     initVariables();
   }
 
@@ -128,7 +128,7 @@ public class PositionEvaluator extends AiPlayer {
   // }
 
    protected boolean isMe(Player p) {
-     return p == this.aiPlayer;
+     return p.getIndex() == this.turnPlayer.getIndex();
    }
 
   protected double reducePoints(double points, Player p) {

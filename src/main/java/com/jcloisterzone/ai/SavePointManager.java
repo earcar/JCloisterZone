@@ -13,6 +13,7 @@ import com.jcloisterzone.ai.operation.MeepleDeployedOperation;
 import com.jcloisterzone.ai.operation.MeepleUndeployedOperation;
 import com.jcloisterzone.ai.operation.Operation;
 import com.jcloisterzone.ai.operation.ScoreOperation;
+import com.jcloisterzone.ai.operation.TileDrawnOperation;
 import com.jcloisterzone.ai.operation.TilePlacedOperation;
 import com.jcloisterzone.board.Position;
 import com.jcloisterzone.board.Tile;
@@ -101,5 +102,9 @@ public class SavePointManager {
 		public void scored(Position position, Player player, int points, String label, boolean isFinal) {
 			operations.addLast(new ScoreOperation(player, points));
 		}
+	    @Override
+	    public void tileDrawn(Tile tile) {
+	      operations.addLast(new TileDrawnOperation(tile));
+	    }
 	}
 }

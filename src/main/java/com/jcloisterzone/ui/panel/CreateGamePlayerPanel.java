@@ -241,7 +241,7 @@ public class CreateGamePlayerPanel extends JPanel {
                 slot.setType(SlotType.STARAI);
                 slot.setAiClassName(ExpectimaxAiPlayer.class.getName());
                 supported = ExpectimaxAiPlayer.supportedExpansions();
-                nick = nameProvider.reserveName(SlotType.STARAI, slot.getNumber());
+                nick = nameProvider.reserveName(SlotType.AI, slot.getNumber());
                 slot.setNick(nick);
                 nickname.setText(nick);
                 break;

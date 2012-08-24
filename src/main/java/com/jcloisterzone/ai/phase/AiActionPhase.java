@@ -3,7 +3,6 @@ package com.jcloisterzone.ai.phase;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.jcloisterzone.Expansion;
 import com.jcloisterzone.action.TakePrisonerAction;
 import com.jcloisterzone.action.MeepleAction;
 import com.jcloisterzone.action.PlayerAction;
@@ -18,7 +17,6 @@ import com.jcloisterzone.figure.Meeple;
 import com.jcloisterzone.figure.SmallFollower;
 import com.jcloisterzone.game.Game;
 import com.jcloisterzone.game.expansion.BridgesCastlesBazaarsGame;
-import com.jcloisterzone.game.expansion.TowerGame;
 import com.jcloisterzone.game.phase.Phase;
 import com.jcloisterzone.game.phase.TowerCapturePhase;
 
@@ -48,18 +46,6 @@ public class AiActionPhase extends Phase {
     @Override
     public void notifyRansomPaid() {
         enter(); //recompute available actions
-    }
-
-    private boolean isAutoTurnEnd(List<PlayerAction> actions) {
-        if (! actions.isEmpty()) return false;
-        if (game.hasExpansion(Expansion.TOWER)) {
-            TowerGame tg = game.getTowerGame();
-            if (!tg.isRansomPaidThisTurn() && tg.hasImprisonedFollower(getActivePlayer())) {
-                //player can return figure immediately
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override

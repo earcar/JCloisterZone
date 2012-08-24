@@ -1,8 +1,10 @@
 package com.jcloisterzone.ai.starplayer;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jcloisterzone.Player;
 import com.jcloisterzone.board.Location;
 import com.jcloisterzone.board.Position;
 import com.jcloisterzone.board.Rotation;
@@ -21,6 +23,7 @@ public class ExpectimaxNode {
   private Rotation rotation;
   private Location location;
   private Class<? extends Meeple> meepleType;
+  private Player player;
 
   public ExpectimaxNode() {
     this(null, null, null, null, null, null);
@@ -108,25 +111,28 @@ public class ExpectimaxNode {
   }
 
   public String toString() {
-    if (position == null && location == null && tile == null && bestMove != null) {
-      return "ExpectimaxNode " + (isMax ? "max" : "min") + " score: " + score + " BEST MOVE: " + bestMove.toString();
-    } else {
-      return "ExpectimaxNode " + (isMax ? "max" : "min") + " tile: " + tile +  " position: " + position + " rotation: " + rotation + " location: " + location + " score: " + score;
+    String string = "ExpectimaxNode " + (isMax ? "max" : "min");
+    if (position != null && rotation != null) {
+      string += " tile: " + tile +  " position: " + position + " rotation: " + rotation + " location: " + location;
     }
+    if (bestMove != null) {
+      string += " (BEST MOVE: " + bestMove.toString() + ")";
+    }
+    return string + " score: " + score + " player: " + player;
   }
 
-  public void print() {
-    print("", true);
+  public void print(PrintStream printStream) {
+    print(printStream, "", true);
   }
 
-  private void print(String prefix, boolean isTail) {
-    System.out.println(prefix + (isTail ? "└── " : "├── ") + toString());
+  private void print(PrintStream printStream, String prefix, boolean isTail) {
+    printStream.println(prefix + (isTail ? "└── " : "├── ") + toString());
     if (children != null) {
       for (int i = 0; i < children.size() - 1; i++) {
-        children.get(i).print(prefix + (isTail ? "    " : "│   "), false);
+        children.get(i).print(printStream, prefix + (isTail ? "    " : "│   "), false);
       }
       if (children.size() >= 1) {
-        children.get(children.size() - 1).print(prefix + (isTail ?"    " : "│   "), true);
+        children.get(children.size() - 1).print(printStream, prefix + (isTail ?"    " : "│   "), true);
       }
     }
   }
@@ -149,5 +155,13 @@ public class ExpectimaxNode {
 
   public void setBestMove(ExpectimaxNode bestMove) {
     this.bestMove = bestMove;
+  }
+
+  public Player getPlayer() {
+    return player;
+  }
+
+  public void setPlayer(Player player) {
+    this.player = player;
   }
 }
